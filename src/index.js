@@ -91,6 +91,7 @@ class Game extends React.Component {
 			}],
 			stepNumber: 0,
 			xIsNext: true,
+			sortMovesInReverse: false,
 		};
 	}
 
@@ -149,13 +150,21 @@ class Game extends React.Component {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
 		const winner = this.calculateWinner(current.squares);
-
 		const moves = history.map((step, move) => {
 			let desc;
 			if (move === 0) {
-				desc = 'Go to game start (' + this.state.history[move].coords[0] + ', ' + this.state.history[move].coords[1] + ')';
+				desc = 'Go to game start (' +
+					this.state.history[move].coords[0] +
+					', ' +
+					this.state.history[move].coords[1] +
+					')';
 			} else {
-				desc = 'Go to move #' + move + ' (' + this.state.history[move].coords[0] + ', ' + this.state.history[move].coords[1] + ')';
+				desc = 'Go to move #' +
+					move +
+					' (' +
+					this.state.history[move].coords[0] +
+					', ' +
+					this.state.history[move].coords[1] + ')';
 			}
 
 			/* Bold move button if it is the current move */
@@ -173,6 +182,10 @@ class Game extends React.Component {
 				);
 			}
 		});
+
+		const movelist = this.state.sortMovesInReverse ?
+			<ol reversed>{moves.slice().reverse()}</ol> :
+			<ol start="0">{moves}</ol>;
 
 		let status;
 		if (winner) {
@@ -193,8 +206,17 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol start="0">{moves}</ol>
+						{movelist}
         </div>
+			<div className="reverse-button">
+				<button onClick={() =>
+					this.setState({
+						sortMovesInReverse: !this.state.sortMovesInReverse,
+					})}
+				>
+				Reverse order
+				</button>
+			</div>
       </div>
     );
   }
