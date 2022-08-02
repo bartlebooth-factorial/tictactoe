@@ -67,7 +67,8 @@ class Game extends React.Component {
 		super(props);
 		this.state = {
 			history: [{
-				squares: Array(9).fill(null)
+				squares: Array(9).fill(null),
+				coords: Array(2).fill(0),
 			}],
 			stepNumber: 0,
 			xIsNext: true,
@@ -106,13 +107,19 @@ class Game extends React.Component {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
 		const squares = current.squares.slice();
+		const coords = current.coords.slice();
 		if (squares[i] || this.calculateWinner(squares)) {
 			return;
 		}
 		squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+		coords[0] = (i % 3) + 1;
+		coords[1] = Math.floor(i / 3) + 1;
+
 		this.setState({
 			history: history.concat([{
 				squares: squares,
+				coords: coords,
 			}]),
 			stepNumber: history.length,
 			xIsNext: !this.state.xIsNext,
@@ -125,7 +132,12 @@ class Game extends React.Component {
 		const winner = this.calculateWinner(current.squares);
 
 		const moves = history.map((step, move) => {
-			const desc = move ? 'Go to move #' + move : 'Go to game start';
+			let desc;
+			if (move === 0) {
+				desc = 'Go to game start (' + this.state.history[move].coords[0] + ', ' + this.state.history[move].coords[1] + ')';
+			} else {
+				desc = 'Go to move #' + move + ' (' + this.state.history[move].coords[0] + ', ' + this.state.history[move].coords[1] + ')';
+			}
 
 			/* Bold move button if it is the current move */
 			if (move === this.state.stepNumber) {
